@@ -21,19 +21,35 @@ function getWeatherForecast(event) {
 }
 
 function getLocationKey(city) {
-  // TODO get the "location key" for the given `city`!
-  //  then call getCurrentCondition to retrieve weather forecast for it!
-  console.log(city);
+  fetch(`${BASE_URL}/locations/v1/cities/search?apikey=${API_KEY}&q=${city}`)
+    .then((response) => {
+      return response.json()
+    })
+    .then((data) => {
+      const location = data[0];
+      getCurrentCondition(location)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 function getCurrentCondition(location) {
-  // TODO get the "current condition" based on the `location` argument!
-  //  then call updateUI to update the UI!
+  fetch(`${BASE_URL}/currentconditions/v1/${location.Key}?apikey=${API_KEY}`)
+    .then((response) => {
+      return response.json()
+    })
+    .then((data) => {
+      const forecast = data[0];
+      updateUI(location, forecast)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 function updateUI(location, forecast) {
-  // TODO update the following based on `location` and `forecast` arguments!
-  document.getElementById("name").innerText = "City Name";
-  document.getElementById("condition").innerText = "Weather Condition";
-  document.getElementById("temperature").innerText = "Temperature";
+  document.getElementById("name").innerText = location.LocalizedName;
+  document.getElementById("condition").innerText = forecast.WeatherText;
+  document.getElementById("temperature").innerText = `${forecast.Temperature.Imperial.Value} F`;
 }
